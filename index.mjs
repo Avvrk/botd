@@ -1,4 +1,4 @@
-import "./bot.js";
+import "./bot.mjs";
 import express from "express";
 import cors from "cors";
 import db_connection from "./database/connection.mjs";
