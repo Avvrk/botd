@@ -4,6 +4,7 @@ import cron from "node-cron";
 import { Client } from "discord.js";
 import { createClient } from "pexels";
 import "dotenv/config";
+import Bot from "./models/bot.mjs";
 
 import bot from "./commands/bot.mjs"
 
@@ -53,10 +54,18 @@ cron.schedule("0 8 * * *", async () => {
       iconURL: "https://images.pexels.com/lib/api/pexels.png",
     });
 
-  if (daily_channel) {
-    const canal = await client.channels.fetch(daily_channel);
-    canal.send({ embeds: [embed] });
-  }
+    const configuraciones = await Bot.find();
+
+    for (const config of configuraciones) {
+      try {
+        const canal = await client.channels.fetch(config.daily_channel);
+        if (canal && canal.isTextBased()) {
+          await canal.send({ embeds: [embed] });
+        }
+      } catch (error) {
+        console.error(`Error al enviar mensaje a ${config.daily_channel}:`, error);
+      }
+    }
 }, {
   scheduled: true,
   timezone: "America/Bogota"
